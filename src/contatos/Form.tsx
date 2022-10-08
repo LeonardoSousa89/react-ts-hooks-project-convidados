@@ -7,18 +7,29 @@ import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 
-import { Contato } from './contato'
+import { Contato, validationSchema } from './contato'
 import { useFormik, FormikHelpers } from 'formik'
 
 interface ContatoFormProps {
-    contato? : Contato;
+    contato : Contato;
+    submeterFormulario: (contato: Contato) => void;
 }
 
-export const ContatosForm: React.FC<ContatoFormProps> = ({ contato }:ContatoFormProps) => {
+export const ContatosForm: React.FC<ContatoFormProps> = ({ 
+    contato,
+    submeterFormulario 
+}:ContatoFormProps) => {
+
+    const onSubmit = (contato: Contato, helper: FormikHelpers<Contato>) => {
+        submeterFormulario(contato)
+        helper.resetForm()
+    }
 
     const formik = useFormik<Contato>({
-        onSubmit: (c: Contato) => console.log(c),
-        initialValues: { nome: '', idade: ''}
+        onSubmit,
+        initialValues: { ...contato },
+        validationSchema: validationSchema,
+        validateOnChange: false
     })
 
 
@@ -36,6 +47,8 @@ export const ContatosForm: React.FC<ContatoFormProps> = ({ contato }:ContatoForm
                                value={formik.values.nome}
                                onChange={formik.handleChange} 
                     />
+
+                    <span className="error-msg">{formik.errors.nome}</span>
                 </Grid>
 
                 <Grid item xs={12}>
@@ -47,6 +60,8 @@ export const ContatosForm: React.FC<ContatoFormProps> = ({ contato }:ContatoForm
                                 value={formik.values.idade} 
                                 onChange={formik.handleChange} 
                     />
+
+                    <span className="error-msg">{formik.errors.idade}</span>
                 </Grid>
 
                 <Grid item xs={12}>
